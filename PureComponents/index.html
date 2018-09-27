@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <title>Pure Components</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+
+        class Parent extends React.Component{
+
+            constructor(props){
+                super(props);
+                this.state= {
+                    counter: 0
+                }
+            }
+
+            incrementCounter(){
+                this.setState((state, props) => ({
+                    counter: state.counter + 1
+                }));
+            }
+
+
+            render(){
+                console.log('Parent Component Renders');
+                return(
+                    <div>
+                        <button onClick={()=>{this.incrementCounter()}}>Click Me</button>
+                        <br/>
+                        <h3>The state counter is {this.state.counter}</h3>
+                        <ChildComponent/>
+                        <ChildPureComponent/>
+                        <ChildLifecycleComponent/>
+                    </div>
+                )
+            }
+        }
+
+        class ChildComponent extends React.Component{
+            render(){
+                console.log('ChildComponent Renders');
+                return(
+                    <div></div>
+                )
+            }
+        }
+
+        
+        class ChildPureComponent extends React.PureComponent{
+            render(){
+                console.log('ChildPureComponent Renders');
+                return(
+                    <div></div>
+                )
+            }
+        }
+
+        
+        class ChildLifecycleComponent extends React.Component{
+            render(){
+                console.log('ChildLifecycleComponent Renders');
+                return(
+                    <div></div>
+                )
+            }
+        }
+        
+        ReactDOM.render(
+           <Parent/>,
+            document.getElementById('app')
+        )
+    
+    </script>
+    
+</body>
+</html>
