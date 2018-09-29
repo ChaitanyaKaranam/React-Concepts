@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <title>Pure Components</title>
 </head>
@@ -13,13 +17,15 @@
     <div id="app"></div>
     <script type="text/babel">
 
-        class Parent extends React.Component{
+        class Parent extends React.Component{           
 
             constructor(props){
                 super(props);
                 this.state= {
-                    counter: 0
-                }
+                    counter: 0,
+                    childCounter: 0
+                };
+                var stateCounter;
             }
 
             incrementCounter(){
@@ -28,50 +34,87 @@
                 }));
             }
 
+            // Will check the parent counter and assign this to child counter every 7 seconds.
+            getCounter(){
+                if(!this.stateCounter){
+                    this.stateCounter = setInterval(() => {
+                        console.log(this.state.childCounter);                        
+                        // Parent component renders every 7 seconds because state is set at every 7 seconds.
+                        this.setState((state, props) => ({
+                            childCounter: state.counter
+                        }))
+                    },7000)
+                }                
+            }
 
             render(){
                 console.log('Parent Component Renders');
                 return(
-                    <div>
-                        <button onClick={()=>{this.incrementCounter()}}>Click Me</button>
+                    <div className="container">
                         <br/>
-                        <h3>The state counter is {this.state.counter}</h3>
-                        <ChildComponent/>
-                        <ChildPureComponent/>
-                        <ChildLifecycleComponent/>
+                        <a className="grey darken-3 white-text btn" href="../index.html">Home</a>
+                        <br/><br/>
+                        <hr/>
+                        <br/>
+                        <button className="btn btn-floating" onClick={()=>{this.incrementCounter()}}><i class="material-icons">add</i></button>
+                        <br/>
+                        <p>Child state counter is updated for every 7 seconds</p>
+                        {this.getCounter()}
+                        <h5>The Parent component state is {this.state.counter}</h5>
+                        <hr/>
+                        <ChildComponent timerCounter={this.state.childCounter}/>
+                        <hr/>
+                        <ChildPureComponent timerCounter={this.state.childCounter}/>
+                        <hr/>
+                        <ChildLifecycleComponent timerCounter={this.state.childCounter}/>
                     </div>
                 )
             }
         }
 
+        // Child Component always renders when parent component renders.
+        // Even if props to the child component remains same, Child component will still be re-rendered.
         class ChildComponent extends React.Component{
             render(){
                 console.log('ChildComponent Renders');
                 return(
-                    <div></div>
+                    <div>
+                        <h5>Child Component State is {this.props.timerCounter}</h5>
+                    </div>
                 )
             }
         }
 
-        
+        // Pure component renders when parent component renders for first time.
+        // Pure component will not render unless props to pure component are changed.
         class ChildPureComponent extends React.PureComponent{
             render(){
                 console.log('ChildPureComponent Renders');
                 return(
-                    <div></div>
+                    <div>
+                        <h5>Pure Child Component State is {this.props.timerCounter}</h5>
+                    </div>
+                )
+            }
+        }
+        
+        class ChildLifecycleComponent extends React.Component{
+
+            // Should component update will prevent render if props are not changed
+            shouldComponentUpdate(nextProps, nextState){
+                return (this.props.timerCounter !== nextProps.timerCounter);
+            }
+
+            render(){
+                console.log('ChildLifecycleComponent Renders');
+                return(
+                    <div>
+                        <h5>Child LifeCycle Component State is {this.props.timerCounter}</h5>
+                    </div>
                 )
             }
         }
 
-        
-        class ChildLifecycleComponent extends React.Component{
-            render(){
-                console.log('ChildLifecycleComponent Renders');
-                return(
-                    <div></div>
-                )
-            }
-        }
         
         ReactDOM.render(
            <Parent/>,
